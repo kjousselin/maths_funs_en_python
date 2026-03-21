@@ -2,12 +2,21 @@ import plotly.graph_objects as go
 import numpy as np
 import imageio.v2 as imageio
 from io import BytesIO
+import random
+import datetime
+
+
+
 
 
 # NUAGES
 def add_cloud(fig, x_center, y_center, scale=1):
     """
     Ajout de nuages à la figure fig, autour des positions (x_center, y_center)
+    
+    Returns
+    -------
+    fig      la figure plotly complétée
     """
     t = np.linspace(0, 2*np.pi, 100)
     
@@ -35,11 +44,14 @@ def draw_a_rainbow(rainbow_colors, thickness = 1, width = 800, height = 500):
     """
     Renvoie une figure plotly
     
-    
     rainbow_colors   list         liste des couleurs 
     thickness        float|int    épaisseur des bandes (1 = elles se touchent)
     width            int          dimension de l'image (largeur)
     height           int          dimension de l'image (hauteur)
+    
+    Returns
+    -------
+    fig              figure plotly
     """
 
     fig = go.Figure()
@@ -88,4 +100,66 @@ def draw_a_rainbow(rainbow_colors, thickness = 1, width = 800, height = 500):
 
     return(fig)
 
+
+
+def generate_random_rainbow(target_colors, max_attempts=None):
+    """
+    Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
+    
+    Parameters
+    ----------
+    target_colors  list           Liste des couleurs dans l'ordre cible.
+    max_attempts   int or None    Nombre maximum de tentatives. Si None, tente indéfiniment jusqu'à réussite.
+    
+    Returns
+    -------
+    frames         list           Liste des images (frames) de chaque tentative.
+    attempts       int            Nombre de tentatives effectuées.
+    """
+    frames = []
+    k = 0
+    rainbow_colors = []
+
+    while rainbow_colors != target_colors and (max_attempts is None or k < max_attempts):
+        k += 1
+        rainbow_colors = target_colors.copy()
+        random.shuffle(rainbow_colors)
+
+        # Dessiner l'arc-en-ciel
+        fig = draw_a_rainbow(rainbow_colors, thickness=1, width=550, height=300)
+
+        # Ajouter annotation du numéro de tentative
+        fig.add_annotation(
+                            x         = 0.02,
+                            y         = 0.98,
+                            xref      = "paper",
+                            yref      = "paper",
+                            text      = f"k = {k}",
+                            showarrow = False,
+                            font      = dict(size=20, color="blue", family="Patrick Hand"),
+                            align     = "left",
+                        )
+
+        # Convertir la figure en image et ajouter aux frames
+        buf = BytesIO()
+        fig.write_image(buf, format="png", scale=1)
+        buf.seek(0)
+        frames.append(imageio.imread(buf))
+
+    return frames, k
+
+
+
+def export_gif(frames, output_dir, prefix="animation_rainbow", duration=0.1):
+    """
+    Exporte les frames en GIF animé dans le répertoire de sortie.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')
+    file_path = output_dir / f"{timestamp}_{prefix}.gif"
+    
+    imageio.mimwrite(file_path, frames, duration=duration, loop=None)
+    
+    return file_path
 
