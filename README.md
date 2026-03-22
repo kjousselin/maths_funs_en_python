@@ -20,3 +20,6 @@ Ce script génère des arcs-en-ciel avec des couleurs aléatoires, jusqu’à re
 **Exécution**
 ```bash
 python ./source/01_arc_en_ciel_alea/main.py
+
+
+![Animation Rainbow](output/20260322_1039_animation_rainbow_709_attempts.gif)
