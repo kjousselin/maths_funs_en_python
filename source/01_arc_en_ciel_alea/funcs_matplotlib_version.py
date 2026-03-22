@@ -5,6 +5,12 @@ import matplotlib.pyplot as plt
 import imageio.v2 as imageio
 import random
 import datetime
+import pathlib
+
+
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
+
 
 
 
@@ -73,7 +79,7 @@ def draw_a_rainbow(rainbow_colors, thickness=1, width=400, height=300):
 
 
     # dessin bien à droite, pour laisser de la place au text (autre solution plt.subplot(1,2))
-    ax.set_xlim([-10.5,30])
+    ax.set_xlim([-10.5,22])
     ax.set_aspect('equal')
     ax.axis('off')
 
@@ -177,20 +183,20 @@ def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1,
             # Ecrire les anciens essais
             for essai_old in range(1, essai):
                 ax.text(
-                    12, 10-essai_old*2,
-                    f"Expérience n° {essai_old} : tentative n° {int(attempts[-essai_old])+1}",
+                    11, 11-essai_old*3.5,
+                    f"Expérience n°{essai_old} :\n > tentative n° {int(attempts[-essai_old])+1}",
                     ha       = 'left',
-                    fontsize = 14,
+                    fontsize = 12,
                     color    = 'blue',
                     fontname = 'Patrick Hand'
                 )
 
             # ecrire l'essai en cours, et les anciens
             ax.text(
-                12, 10-essai*2,
-                f"Expérience n° {essai} : tentative n° {attempt}",
+                11, 11-essai*3.5,
+                f"Expérience n°{essai} :\n > tentative n°{attempt}",
                 ha       = 'left',
-                fontsize = 14,
+                fontsize = 12,
                 color    = 'blue',
                 fontname = 'Patrick Hand'
             )
@@ -232,3 +238,35 @@ def export_gif(frames, OUTPUT_DIR, verbose=False, duration=0.1, attempts=""):
 
     return file_path
 
+
+
+
+
+def export_mp4_from_gif(gif_path, verbose=False, fps=15):
+    """
+    Convertit un GIF en MP4 et le sauvegarde dans le même dossier (résultat plus léger que le GIF)
+    """
+    gif_path = pathlib.Path(gif_path)
+    if not gif_path.exists():
+        raise FileNotFoundError(f"GIF not found: {gif_path}")
+
+    # Création de la vidéo depuis le GIF
+    clip = VideoFileClip(str(gif_path))
+    mp4_file = gif_path.with_suffix(".mp4")
+    clip.write_videofile(str(mp4_file), codec="libx264", fps=fps, audio=False, preset="slow")
+    clip.close()
+
+    if verbose:
+        print(f"MP4 exported to {mp4_file}")
+    return mp4_file
+
+
+
+
+def export_mp4_from_frames(frames, mp4_path, fps=15):
+    """
+    Export directement en mp4 depuis les frames. Plus net, mais fichier plus lourd que le GIF !
+    """
+    clip = ImageSequenceClip(frames, fps=fps)
+    clip.write_videofile(mp4_path, codec="libx264", audio=False, preset="slow", bitrate="5000k") # meilleur qualité mais bcp plus lourd
+    clip.close()
