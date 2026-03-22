@@ -28,19 +28,19 @@ def add_cloud(fig, x_center, y_center, scale=1):
         y = y_center + scale*(dy + 0.6*np.sin(t))
         
         fig.add_trace(go.Scatter(
-            x=x,
-            y=y,
-            fill="toself",
-            fillcolor="#cfd8dc",  # gris bleu clair
-            line=dict(color="black", width=2),
-            showlegend=False
+            x          = x,
+            y          = y,
+            fill       = "toself",
+            fillcolor  = "#cfd8dc",  # gris bleu clair
+            line       = dict(color="black", width=2),
+            showlegend = False
         ))
         
     return(fig)
 
 
 
-def draw_a_rainbow(rainbow_colors, thickness = 1, width = 800, height = 500):
+def draw_a_rainbow(rainbow_colors, thickness=1, width=800, height=500):
     """
     Renvoie une figure plotly
     
@@ -102,7 +102,7 @@ def draw_a_rainbow(rainbow_colors, thickness = 1, width = 800, height = 500):
 
 
 
-def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False):
+def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, width=800, height=500):
     """
     Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
     
@@ -131,17 +131,17 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False):
         random.shuffle(rainbow_colors)
 
         # Dessiner l'arc-en-ciel
-        fig = draw_a_rainbow(rainbow_colors, thickness=1, width=550, height=300)
+        fig = draw_a_rainbow(rainbow_colors, thickness=1, width=width, height=height)
 
         # Ajouter annotation du numéro de tentative
         fig.add_annotation(
-                            x         = 0.02,
-                            y         = 0.98,
+                            x         = 0,
+                            y         = 1,
                             xref      = "paper",
                             yref      = "paper",
                             text      = f"tentative n° {attempt}",
                             showarrow = False,
-                            font      = dict(size=20, color="blue", family="Patrick Hand"),
+                            font      = dict(size=18, color="blue", family="Patrick Hand"),
                             align     = "left",
                         )
 
@@ -157,19 +157,24 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False):
 
 
 
-def export_gif(frames, output_dir, prefix="animation_rainbow", duration=0.1, verbose=False):
+
+def export_gif(frames, OUTPUT_DIR, verbose=False, duration=0.1, attempts=""):
     """
     Exporte les frames en GIF animé dans le répertoire de sortie.
+
     """
-    output_dir.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # supprimer les frames vides 
-    frames = [frame for frame in frames if frame is not None]
+    frames    = [frame for frame in frames if frame is not None]
     
     timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-    file_path = output_dir / f"{timestamp}_{prefix}.gif"
+    prefix    = "animation_rainbow"
+    file_path = OUTPUT_DIR / f"{timestamp}_{prefix}_{str(attempts)}_attempts.gif"
     
-    imageio.mimwrite(file_path, frames, duration=duration, loop=None)
+    imageio.mimwrite(file_path, frames, duration=duration*1000, loop=None)
+
+    if verbose: print(f"\nGIF exported to {file_path} ({attempts} attempts)")
     
     return file_path
 

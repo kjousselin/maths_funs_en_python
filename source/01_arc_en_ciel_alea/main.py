@@ -9,18 +9,21 @@ Script pour générer une animation GIF d'arc-en-ciel avec des tentatives de mé
 
 import pathlib
 
-from funcs import draw_a_rainbow, generate_a_random_rainbow, export_gif
+#from funcs import draw_a_rainbow, generate_a_random_rainbow, export_gif
 
+# matplotlib plus efficace que plotly
+from funcs_matplotlib_version import draw_a_rainbow, generate_a_random_rainbow, export_gif
 
 ################################# PARAMÈTRES #################################
 
 
 # Dimensions de la figure
-WIDTH        = 800
-HEIGHT       = 500
+WIDTH        = 350
+HEIGHT       = 250
 
 verbose      = True
-max_attempts = None
+max_attempts = None   # 4500 en plotly 350x250 pour 30.6 Mo
+
 
 # Couleurs réelles de l’arc-en-ciel
 RAINBOW_COLORS_OK = [
@@ -43,8 +46,8 @@ OUTPUT_DIR = pathlib.Path('./output/')
 
 if __name__ == "__main__":
     
-    frames, attempts = generate_a_random_rainbow(RAINBOW_COLORS_OK, max_attempts=max_attempts, verbose=verbose)
+    frames, attempts = generate_a_random_rainbow(RAINBOW_COLORS_OK, max_attempts=max_attempts, verbose=verbose, width=WIDTH, height=HEIGHT )
     
-    gif_file         = export_gif(frames, OUTPUT_DIR, verbose=verbose, duration=0.02)
+    gif_file         = export_gif(frames, OUTPUT_DIR, verbose=verbose, duration=0.1, attempts=attempts)
     
-    if verbose: print(f"\nGIF exported to {gif_file} ({attempts} attempts)")
+    if verbose: print(f"Terminé.")
