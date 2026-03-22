@@ -4,7 +4,7 @@ import imageio.v2 as imageio
 from io import BytesIO
 import random
 import datetime
-
+#from tqdm import tqdm
 
 
 
@@ -102,7 +102,7 @@ def draw_a_rainbow(rainbow_colors, thickness = 1, width = 800, height = 500):
 
 
 
-def generate_random_rainbow(target_colors, max_attempts=None):
+def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False):
     """
     Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
     
@@ -117,11 +117,16 @@ def generate_random_rainbow(target_colors, max_attempts=None):
     attempts       int            Nombre de tentatives effectuées.
     """
     frames = []
-    k = 0
+    attempt = 0
     rainbow_colors = []
 
-    while rainbow_colors != target_colors and (max_attempts is None or k < max_attempts):
-        k += 1
+    while rainbow_colors != target_colors and (max_attempts is None or attempt < max_attempts):
+
+        # N° de tentative
+        attempt += 1
+        if verbose: print('.', end='')
+
+
         rainbow_colors = target_colors.copy()
         random.shuffle(rainbow_colors)
 
@@ -134,27 +139,32 @@ def generate_random_rainbow(target_colors, max_attempts=None):
                             y         = 0.98,
                             xref      = "paper",
                             yref      = "paper",
-                            text      = f"k = {k}",
+                            text      = f"tentative n° {attempt}",
                             showarrow = False,
                             font      = dict(size=20, color="blue", family="Patrick Hand"),
                             align     = "left",
                         )
 
+    
         # Convertir la figure en image et ajouter aux frames
         buf = BytesIO()
         fig.write_image(buf, format="png", scale=1)
         buf.seek(0)
         frames.append(imageio.imread(buf))
 
-    return frames, k
+
+    return frames, attempt
 
 
 
-def export_gif(frames, output_dir, prefix="animation_rainbow", duration=0.1):
+def export_gif(frames, output_dir, prefix="animation_rainbow", duration=0.1, verbose=False):
     """
     Exporte les frames en GIF animé dans le répertoire de sortie.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # supprimer les frames vides 
+    frames = [frame for frame in frames if frame is not None]
     
     timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')
     file_path = output_dir / f"{timestamp}_{prefix}.gif"

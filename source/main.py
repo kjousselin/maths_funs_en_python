@@ -9,15 +9,18 @@ Script pour générer une animation GIF d'arc-en-ciel avec des tentatives de mé
 
 import pathlib
 
-from funcs import draw_a_rainbow, generate_random_rainbow, export_gif
+from funcs import draw_a_rainbow, generate_a_random_rainbow, export_gif
 
 
 ################################# PARAMÈTRES #################################
 
 
 # Dimensions de la figure
-WIDTH = 800
-HEIGHT = 500
+WIDTH        = 800
+HEIGHT       = 500
+
+verbose      = True
+max_attempts = None
 
 # Couleurs réelles de l’arc-en-ciel
 RAINBOW_COLORS_OK = [
@@ -34,12 +37,14 @@ RAINBOW_COLORS_OK = [
 OUTPUT_DIR = pathlib.Path('./output/')
 
 
+
+
 ################################# MAIN #################################
 
 if __name__ == "__main__":
     
-    frames, attempts = generate_random_rainbow(RAINBOW_COLORS_OK, max_attempts=10)
+    frames, attempts = generate_a_random_rainbow(RAINBOW_COLORS_OK, max_attempts=max_attempts, verbose=verbose)
     
-    gif_file         = export_gif(frames, OUTPUT_DIR)
+    gif_file         = export_gif(frames, OUTPUT_DIR, verbose=verbose, duration=0.02)
     
-    print(f"GIF exported to {gif_file} ({attempts} attempts)")
+    if verbose: print(f"\nGIF exported to {gif_file} ({attempts} attempts)")
