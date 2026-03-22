@@ -8,7 +8,6 @@ import datetime
 
 
 
-
 # NUAGES
 def add_cloud(fig, x_center, y_center, scale=1):
     """
@@ -40,6 +39,7 @@ def add_cloud(fig, x_center, y_center, scale=1):
 
 
 
+# Dessine un arc en ciel
 def draw_a_rainbow(rainbow_colors, thickness=1, width=800, height=500):
     """
     Renvoie une figure plotly
@@ -102,6 +102,7 @@ def draw_a_rainbow(rainbow_colors, thickness=1, width=800, height=500):
 
 
 
+# Dessine un arc en ciel aléatoire
 def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, width=800, height=500):
     """
     Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
@@ -157,7 +158,25 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, w
 
 
 
+# Dessine plusieurs arc en ciel aléatoire à suivre (nb_essais)
+def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1, verbose=False, width=800, height=500):
+    """
+    Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
+    Répète l'opération nb_essais fois !
 
+    TODO !
+    """
+    print(f"generate_some_random_rainbows() via plotly : TODO (1 seul essai sera fait !)")
+
+    frames, attempt = generate_a_random_rainbow(target_colors, max_attempts=max_attempts, verbose=verbose, width=width, height=height)
+
+
+    attempts = str(attempt)
+
+    return frames, attempts
+
+
+# EXPORT GIF
 def export_gif(frames, OUTPUT_DIR, verbose=False, duration=0.1, attempts=""):
     """
     Exporte les frames en GIF animé dans le répertoire de sortie.

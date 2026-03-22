@@ -7,9 +7,8 @@ import random
 import datetime
 
 
-# =========================
+
 # NUAGES
-# =========================
 def add_cloud(ax, x_center, y_center, scale=1):
     """
     Ajout de nuages à la figure fig, autour des positions (x_center, y_center)
@@ -28,9 +27,8 @@ def add_cloud(ax, x_center, y_center, scale=1):
         ax.fill(x, y, color="#cfd8dc", edgecolor="black")
 
 
-# =========================
-# ARC-EN-CIEL
-# =========================
+
+# Dessine un arc en ciel
 def draw_a_rainbow(rainbow_colors, thickness=1, width=400, height=300):
     """
     Renvoie une figure matplolib
@@ -50,6 +48,7 @@ def draw_a_rainbow(rainbow_colors, thickness=1, width=400, height=300):
     height_pouce = height/dpi
 
     fig, ax      = plt.subplots(figsize=(width_pouce, height_pouce), dpi=dpi)
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     theta        = np.linspace(0, np.pi, 300)
 
@@ -72,15 +71,17 @@ def draw_a_rainbow(rainbow_colors, thickness=1, width=400, height=300):
     add_cloud(ax, -6.5, 0, scale=2)
     add_cloud(ax, 6.5, 0, scale=2)
 
+
+    # dessin bien à droite, pour laisser de la place au text (autre solution plt.subplot(1,2))
+    ax.set_xlim([-10.5,30])
     ax.set_aspect('equal')
     ax.axis('off')
 
     return fig, ax
 
 
-# =========================
-# GENERATION
-# =========================
+
+# Dessine un arc en ciel aléatoire
 def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, width=800, height=500):
     """
     Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
@@ -126,6 +127,8 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, w
 
         frames.append(image)
 
+        plt.tight_layout()
+
         plt.close(fig)  # évite fuite mémoire
 
 
@@ -133,9 +136,85 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, w
 
 
 
-# =========================
+# Dessine plusieurs arc en ciel aléatoire à suivre (nb_essais)
+def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1, verbose=False, width=800, height=500):
+    """
+    Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
+    Répète l'opération nb_essais fois !
+    
+    Parameters
+    ----------
+    target_colors  list           Liste des couleurs dans l'ordre cible.
+    max_attempts   int or None    Nombre maximum de tentatives. Si None, tente indéfiniment jusqu'à réussite.
+    
+    Returns
+    -------
+    frames         list           Liste des images (frames) de chaque tentative.
+    attempts       int            Nombre de tentatives effectuées.
+    """
+    attempts = []
+    frames   = []
+
+
+    for essai in range(1, nb_essais+1):
+
+        print(f'\nEssai numéro {essai} :')
+
+        attempt        = 0
+        rainbow_colors = []
+
+        while rainbow_colors != target_colors and (max_attempts is None or attempt < max_attempts):
+
+            attempt += 1
+            if verbose:
+                print('.', end='', flush=True)
+
+            rainbow_colors = target_colors.copy()
+            random.shuffle(rainbow_colors)
+
+            fig, ax = draw_a_rainbow(rainbow_colors, width=width, height=height)
+
+            # Ecrire les anciens essais
+            for essai_old in range(1, essai):
+                ax.text(
+                    12, 10-essai_old*2,
+                    f"Expérience n° {essai_old} : tentative n° {int(attempts[-essai_old])+1}",
+                    ha       = 'left',
+                    fontsize = 14,
+                    color    = 'blue',
+                    fontname = 'Patrick Hand'
+                )
+
+            # ecrire l'essai en cours, et les anciens
+            ax.text(
+                12, 10-essai*2,
+                f"Expérience n° {essai} : tentative n° {attempt}",
+                ha       = 'left',
+                fontsize = 14,
+                color    = 'blue',
+                fontname = 'Patrick Hand'
+            )
+
+            # conversion en image numpy
+            fig.canvas.draw()
+            image = np.asarray(fig.canvas.buffer_rgba())
+
+            frames.append(image)
+
+            plt.close(fig)  # évite fuite mémoire
+
+        print(f"\n{attempt} tentatives !")
+
+        attempts.append(str(attempt))
+    
+    attempts = '_'.join(attempts)
+
+
+    return frames, attempts
+
+
+
 # EXPORT GIF
-# =========================
 def export_gif(frames, OUTPUT_DIR, verbose=False, duration=0.1, attempts=""):
     """
     Exporte les frames en GIF animé dans le répertoire de sortie.
