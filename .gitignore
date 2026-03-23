@@ -3,6 +3,7 @@ output
 output/*
 !output/20260322_1039_animation_rainbow_709_attempts.gif
 !output/20260322_2020_animation_rainbow_1723_4831_8695_attempts_v1.mp4
+*.docx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
