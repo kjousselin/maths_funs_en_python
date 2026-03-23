@@ -143,7 +143,7 @@ def generate_a_random_rainbow(target_colors, max_attempts=None, verbose=False, w
 
 
 # Dessine plusieurs arc en ciel aléatoire à suivre (nb_essais)
-def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1, verbose=False, width=800, height=500):
+def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1, verbose=False, width=800, height=500, fps=10):
     """
     Génère des arcs-en-ciel aléatoires jusqu'à obtenir l'ordre cible ou atteindre max_attempts.
     Répète l'opération nb_essais fois !
@@ -184,7 +184,7 @@ def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1,
             for essai_old in range(1, essai):
                 ax.text(
                     11, 11-essai_old*3.5,
-                    f"Expérience n°{essai_old} :\n > tentative n° {int(attempts[-essai_old])+1}",
+                    f"Expérience n°{essai_old} :\n > tentative n°{int(attempts[essai_old-1])}",
                     ha       = 'left',
                     fontsize = 12,
                     color    = 'blue',
@@ -206,6 +206,11 @@ def generate_some_random_rainbows(target_colors, max_attempts=None, nb_essais=1,
             image = np.asarray(fig.canvas.buffer_rgba())
 
             frames.append(image)
+
+            # en cas de réussite : l'image est affichée 1 seconde 
+            if rainbow_colors == target_colors:
+                for k in range(fps):
+                    frames.append(image)
 
             plt.close(fig)  # évite fuite mémoire
 

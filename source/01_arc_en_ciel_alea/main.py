@@ -50,7 +50,7 @@ if __name__ == "__main__":
     
     #frames, attempts = generate_a_random_rainbow(RAINBOW_COLORS_OK, max_attempts=max_attempts, verbose=verbose, width=WIDTH, height=HEIGHT )
 
-    frames, attempts = generate_some_random_rainbows(RAINBOW_COLORS_OK, max_attempts=max_attempts, nb_essais=nb_essais, verbose=verbose, width=WIDTH, height=HEIGHT )
+    frames, attempts = generate_some_random_rainbows(RAINBOW_COLORS_OK, max_attempts=max_attempts, nb_essais=nb_essais, verbose=verbose, width=WIDTH, height=HEIGHT, fps=fps )
     
     gif_file         = export_gif(frames, OUTPUT_DIR, verbose=verbose, duration=1/fps, attempts=attempts)
     
